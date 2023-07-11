@@ -1,6 +1,8 @@
 package com.liumingyao.usercenter.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.liumingyao.usercenter.common.BaseResponse;
 import com.liumingyao.usercenter.common.ErrorCode;
 import com.liumingyao.usercenter.common.ResultUtils;
@@ -11,6 +13,7 @@ import com.liumingyao.usercenter.model.request.UserLoginRequest;
 import com.liumingyao.usercenter.model.request.UserRegisterRequest;
 import com.liumingyao.usercenter.service.UserService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -29,6 +32,7 @@ import static com.liumingyao.usercenter.contant.UserConstant.USER_LOGIN_STATE;
  */
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = {"http://localhost:3000"})
 public class UserController {
 
     @Resource
@@ -79,7 +83,7 @@ public class UserController {
 
     @GetMapping("/search")
     public BaseResponse<List<User>> searchUsers( String username, HttpServletRequest request){
-        if (!isAdmin(request)) {
+        if (!userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -94,9 +98,38 @@ public class UserController {
         return ResultUtils.success(users);
     }
 
+    @GetMapping("/search/tags")
+    public BaseResponse<List<User>> searchUsersByTags(@RequestParam(required = false) List<String> tagNameList){
+        if (CollectionUtils.isEmpty(tagNameList)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        List<User> users = userService.searchUsersByTags(tagNameList);
+        return ResultUtils.success(users);
+    }
+
+    @GetMapping("/recommend")
+    public BaseResponse<Page<User>> recommendUsers(long pageSize, long pageNum, HttpServletRequest request){
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        Page<User> users = userService.page(new Page<>(pageNum, pageSize), queryWrapper);
+        return ResultUtils.success(users);
+    }
+
+    @PostMapping("/update")
+    public BaseResponse<Integer> updateUser(@RequestBody User user, HttpServletRequest request) {
+        //1.校验参数是否为空
+        if (user == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //2.校验权限
+        User loginUser = userService.getLoginUser(request);
+        //3.触发更新
+        Integer result = userService.updateUser(user, loginUser);
+        return ResultUtils.success(result);
+    }
+
     @PostMapping("/delete")
     public BaseResponse<Boolean> deleteUser(@RequestParam("id") long id, HttpServletRequest request){
-        if (!isAdmin(request)) {
+        if (!userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
         if (id <= 0) {
@@ -107,21 +140,5 @@ public class UserController {
     }
 
 
-
-    /**
-     * 是否为管理员
-     * @param request
-     * @return
-     */
-    private boolean isAdmin(HttpServletRequest request){
-
-        //鉴权，仅管理员可查询
-        Object userObject = request.getSession().getAttribute(USER_LOGIN_STATE);
-        User user = (User) userObject;
-        if (user == null || user.getUserRole() != ADMIN_ROLE){
-            return false;
-        }
-        return true;
-    }
 
 }

@@ -70,6 +70,13 @@ public class User implements Serializable {
     private String planetCode;
 
     /**
+     * 用户标签
+     */
+    private String tags;
+
+    private String profile;
+
+    /**
      * 创建时间
      */
     private Date createTime;

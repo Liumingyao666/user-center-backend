@@ -4,6 +4,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.liumingyao.usercenter.model.User;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
+import static com.liumingyao.usercenter.contant.UserConstant.ADMIN_ROLE;
+import static com.liumingyao.usercenter.contant.UserConstant.USER_LOGIN_STATE;
 
 /**
 * @author LiuMingyao
@@ -44,4 +48,35 @@ public interface UserService extends IService<User> {
      * @return
      */
     int userLogout(HttpServletRequest request);
+
+    /**
+     * 根据标签来搜索用户
+     * @param tagNameList 用户要拥有的标签
+     * @return
+     */
+    List<User> searchUsersByTags(List<String> tagNameList);
+
+    /**
+     * 更改用户信息
+     * @param user
+     * @return
+     */
+    int updateUser(User user, User loginUser);
+
+    /**
+     * 获取当前用户登录信息
+     * @param request
+     * @return
+     */
+    User getLoginUser(HttpServletRequest request);
+
+
+    /**
+     * 是否为管理员
+     * @param request
+     * @return
+     */
+    boolean isAdmin(HttpServletRequest request);
+
+    boolean isAdmin(User loginUser);
 }

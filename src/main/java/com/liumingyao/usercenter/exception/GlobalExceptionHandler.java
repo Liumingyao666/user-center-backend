@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * 集中处理，比如记录日志
  *
  * 实现：
- * Spring AOP :在调用方法前后进行额外的处理1
+ * Spring AOP :在调用方法前后进行额外的处理
  * @author LiuMingyao
  */
 @RestControllerAdvice
