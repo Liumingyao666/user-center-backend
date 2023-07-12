@@ -3,14 +3,11 @@ package com.liumingyao.usercenter.config;
 import lombok.Data;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
-import org.redisson.api.RedissonReactiveClient;
-import org.redisson.api.RedissonRxClient;
 import org.redisson.config.Config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.File;
 
 /**
  * Redisson配置

@@ -6,7 +6,6 @@ import com.liumingyao.usercenter.common.BaseResponse;
 import com.liumingyao.usercenter.common.ErrorCode;
 import com.liumingyao.usercenter.common.ResultUtils;
 import com.liumingyao.usercenter.exception.BusinessException;
-import com.liumingyao.usercenter.model.entity.Team;
 import com.liumingyao.usercenter.model.entity.User;
 import com.liumingyao.usercenter.model.request.UserLoginRequest;
 import com.liumingyao.usercenter.model.request.UserRegisterRequest;
