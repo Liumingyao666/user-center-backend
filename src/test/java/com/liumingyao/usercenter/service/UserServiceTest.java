@@ -1,7 +1,7 @@
 package com.liumingyao.usercenter.service;
 
 
-import com.liumingyao.usercenter.model.User;
+import com.liumingyao.usercenter.model.entity.User;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

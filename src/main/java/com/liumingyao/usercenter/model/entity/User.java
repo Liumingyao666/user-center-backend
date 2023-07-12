@@ -1,4 +1,4 @@
-package com.liumingyao.usercenter.model;
+package com.liumingyao.usercenter.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 

@@ -1,14 +1,13 @@
 package com.liumingyao.usercenter.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.liumingyao.usercenter.common.BaseResponse;
 import com.liumingyao.usercenter.common.ErrorCode;
 import com.liumingyao.usercenter.common.ResultUtils;
-import com.liumingyao.usercenter.contant.UserConstant;
 import com.liumingyao.usercenter.exception.BusinessException;
-import com.liumingyao.usercenter.model.User;
+import com.liumingyao.usercenter.model.entity.Team;
+import com.liumingyao.usercenter.model.entity.User;
 import com.liumingyao.usercenter.model.request.UserLoginRequest;
 import com.liumingyao.usercenter.model.request.UserRegisterRequest;
 import com.liumingyao.usercenter.service.UserService;
@@ -20,12 +19,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.liumingyao.usercenter.contant.UserConstant.ADMIN_ROLE;
 import static com.liumingyao.usercenter.contant.UserConstant.USER_LOGIN_STATE;
 
 /**

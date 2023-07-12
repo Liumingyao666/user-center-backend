@@ -1,13 +1,10 @@
 package com.liumingyao.usercenter.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.liumingyao.usercenter.model.User;
+import com.liumingyao.usercenter.model.entity.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-
-import static com.liumingyao.usercenter.contant.UserConstant.ADMIN_ROLE;
-import static com.liumingyao.usercenter.contant.UserConstant.USER_LOGIN_STATE;
 
 /**
 * @author LiuMingyao

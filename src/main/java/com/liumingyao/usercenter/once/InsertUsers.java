@@ -1,9 +1,7 @@
 package com.liumingyao.usercenter.once;
-import java.util.Date;
 
 import com.liumingyao.usercenter.mapper.UserMapper;
-import com.liumingyao.usercenter.model.User;
-import org.springframework.scheduling.annotation.Scheduled;
+import com.liumingyao.usercenter.model.entity.User;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 

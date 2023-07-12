@@ -8,7 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.liumingyao.usercenter.common.ErrorCode;
 import com.liumingyao.usercenter.exception.BusinessException;
 import com.liumingyao.usercenter.mapper.UserMapper;
-import com.liumingyao.usercenter.model.User;
+import com.liumingyao.usercenter.model.entity.User;
 
 import com.liumingyao.usercenter.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +19,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.liumingyao.usercenter.contant.UserConstant.ADMIN_ROLE;

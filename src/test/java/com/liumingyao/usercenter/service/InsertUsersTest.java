@@ -1,7 +1,6 @@
 package com.liumingyao.usercenter.service;
 
-import com.liumingyao.usercenter.mapper.UserMapper;
-import com.liumingyao.usercenter.model.User;
+import com.liumingyao.usercenter.model.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.StopWatch;
