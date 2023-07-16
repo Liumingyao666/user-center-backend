@@ -1,16 +1,14 @@
-package com.liumingyao.usercenter.model.dto;
+package com.liumingyao.usercenter.model.request;
 
-import com.liumingyao.usercenter.common.PageRequest;
 import lombok.Data;
 
-
+import java.io.Serializable;
+import java.util.Date;
 
 @Data
-public class TeamQuery extends PageRequest {
+public class TeamUpdateRequest implements Serializable {
+    private static final long serialVersionUID = 3191241716373120793L;
 
-    /**
-     * id
-     */
     private Long id;
 
     /**
@@ -23,13 +21,10 @@ public class TeamQuery extends PageRequest {
      */
     private String description;
 
-    private String searchText;
-
     /**
-     * 最大人数
+     * 过期时间
      */
-    private Integer maxNum;
-
+    private Date expireTime;
 
     /**
      * 用户id
@@ -40,4 +35,10 @@ public class TeamQuery extends PageRequest {
      * 0 - 公开，1 - 私有，2 - 加密
      */
     private Integer status;
+
+    /**
+     * 密码
+     */
+    private String password;
+
 }

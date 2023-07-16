@@ -10,6 +10,8 @@ import com.liumingyao.usercenter.model.dto.TeamQuery;
 import com.liumingyao.usercenter.model.entity.Team;
 import com.liumingyao.usercenter.model.entity.User;
 import com.liumingyao.usercenter.model.request.TeamAddRequest;
+import com.liumingyao.usercenter.model.request.TeamUpdateRequest;
+import com.liumingyao.usercenter.model.vo.TeamUserVO;
 import com.liumingyao.usercenter.service.TeamService;
 import com.liumingyao.usercenter.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/team")
@@ -57,11 +60,12 @@ public class TeamController {
 
 
     @PostMapping("/update")
-    public BaseResponse<Boolean> updateTeam(@RequestBody Team team){
-        if (team == null) {
+    public BaseResponse<Boolean> updateTeam(@RequestBody TeamUpdateRequest teamUpdateRequest, HttpServletRequest request){
+        if (teamUpdateRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        boolean result = teamService.updateById(team);
+        User loginUser = userService.getLoginUser(request);
+        boolean result = teamService.updateTeam(teamUpdateRequest, loginUser);
         if (!result) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "修改失败");
         }
@@ -81,7 +85,17 @@ public class TeamController {
     }
 
     @GetMapping("/list")
-    public BaseResponse<Page<Team>> listTeams(TeamQuery teamQuery){
+    public BaseResponse<List<TeamUserVO>> listTeams(TeamQuery teamQuery, HttpServletRequest request){
+        if (teamQuery == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        boolean admin = userService.isAdmin(request);
+        List<TeamUserVO> teamList = teamService.listTeams(teamQuery, admin);
+        return ResultUtils.success(teamList);
+    }
+
+    @GetMapping("/list/page")
+    public BaseResponse<Page<Team>> listTeamsByPage(TeamQuery teamQuery){
         if (teamQuery == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
