@@ -4,6 +4,7 @@ import com.liumingyao.usercenter.model.dto.TeamQuery;
 import com.liumingyao.usercenter.model.entity.Team;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.liumingyao.usercenter.model.entity.User;
+import com.liumingyao.usercenter.model.request.TeamJoinRequest;
 import com.liumingyao.usercenter.model.request.TeamUpdateRequest;
 import com.liumingyao.usercenter.model.vo.TeamUserVO;
 
@@ -41,4 +42,13 @@ public interface TeamService extends IService<Team> {
      * @return
      */
     boolean updateTeam(TeamUpdateRequest teamUpdateRequest, User loginUser);
+
+    /**
+     * 加入队伍
+     *
+     * @param teamJoinRequest
+     * @param loginUser
+     * @return
+     */
+    boolean joinTeam(TeamJoinRequest teamJoinRequest, User loginUser);
 }

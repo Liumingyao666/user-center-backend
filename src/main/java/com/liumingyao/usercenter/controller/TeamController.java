@@ -10,6 +10,7 @@ import com.liumingyao.usercenter.model.dto.TeamQuery;
 import com.liumingyao.usercenter.model.entity.Team;
 import com.liumingyao.usercenter.model.entity.User;
 import com.liumingyao.usercenter.model.request.TeamAddRequest;
+import com.liumingyao.usercenter.model.request.TeamJoinRequest;
 import com.liumingyao.usercenter.model.request.TeamUpdateRequest;
 import com.liumingyao.usercenter.model.vo.TeamUserVO;
 import com.liumingyao.usercenter.service.TeamService;
@@ -109,6 +110,14 @@ public class TeamController {
         return ResultUtils.success(teamPage);
     }
 
-
+    @PostMapping("/join")
+    public BaseResponse<Boolean> joinTeam(@RequestBody TeamJoinRequest teamJoinRequest, HttpServletRequest request){
+        if (teamJoinRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        boolean result = teamService.joinTeam(teamJoinRequest, loginUser);
+        return ResultUtils.success(result);
+    }
 
 }
