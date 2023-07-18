@@ -3,6 +3,7 @@ package com.liumingyao.usercenter.model.dto;
 import com.liumingyao.usercenter.common.PageRequest;
 import lombok.Data;
 
+import java.util.List;
 
 
 @Data
@@ -12,6 +13,11 @@ public class TeamQuery extends PageRequest {
      * id
      */
     private Long id;
+
+    /**
+     * id列表
+     */
+    private List<Long> idList;
 
     /**
      * 队伍名称

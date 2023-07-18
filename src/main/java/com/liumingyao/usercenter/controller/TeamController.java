@@ -9,6 +9,7 @@ import com.liumingyao.usercenter.exception.BusinessException;
 import com.liumingyao.usercenter.model.dto.TeamQuery;
 import com.liumingyao.usercenter.model.entity.Team;
 import com.liumingyao.usercenter.model.entity.User;
+import com.liumingyao.usercenter.model.entity.UserTeam;
 import com.liumingyao.usercenter.model.request.TeamAddRequest;
 import com.liumingyao.usercenter.model.request.TeamJoinRequest;
 import com.liumingyao.usercenter.model.request.TeamQuitRequest;
@@ -16,13 +17,17 @@ import com.liumingyao.usercenter.model.request.TeamUpdateRequest;
 import com.liumingyao.usercenter.model.vo.TeamUserVO;
 import com.liumingyao.usercenter.service.TeamService;
 import com.liumingyao.usercenter.service.UserService;
+import com.liumingyao.usercenter.service.UserTeamService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/team")
@@ -35,6 +40,9 @@ public class TeamController {
 
     @Resource
     private TeamService teamService;
+
+    @Resource
+    private UserTeamService userTeamService;
 
     @PostMapping("/add")
     public BaseResponse<Long> addTeam(@RequestBody TeamAddRequest teamAddRequest, HttpServletRequest request){
@@ -49,11 +57,12 @@ public class TeamController {
     }
 
     @PostMapping("/delete")
-    public BaseResponse<Boolean> deleteTeam(@RequestBody Long id){
-        if (id <= 0) {
+    public BaseResponse<Boolean> deleteTeam(@RequestBody long teamId, HttpServletRequest request){
+        if (teamId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        boolean result = teamService.removeById(id);
+        User loginUser = userService.getLoginUser(request);
+        boolean result = teamService.deleteTeam(teamId, loginUser);
         if (!result) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "删除失败");
         }
@@ -129,6 +138,55 @@ public class TeamController {
         User loginUser = userService.getLoginUser(request);
         boolean result = teamService.quitTeam(teamQuitRequest, loginUser);
         return ResultUtils.success(result);
+    }
+
+    /**
+     * 获取我的队伍
+     *
+     * @param teamQuery
+     * @param request
+     * @return
+     */
+    @GetMapping("/list/my/create")
+    public BaseResponse<List<TeamUserVO>> listMyTeams(TeamQuery teamQuery, HttpServletRequest request){
+        if (teamQuery == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        boolean isAdmin = userService.isAdmin(loginUser);
+        List<TeamUserVO> teamList = teamService.listTeams(teamQuery, true);
+        return ResultUtils.success(teamList);
+    }
+
+    /**
+     * 获取我加入的队伍
+     *
+     * @param teamQuery
+     * @param request
+     * @return
+     */
+    @GetMapping("/list/my/join")
+    public BaseResponse<List<TeamUserVO>> listMyJoinTeams(TeamQuery teamQuery, HttpServletRequest request){
+        if (teamQuery == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        QueryWrapper<UserTeam> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId", loginUser.getId());
+        List<UserTeam> userTeamList = userTeamService.list(queryWrapper);
+        //取出不重复的队伍id
+        //teamId userId
+        //1,2
+        //1,3
+        //2,3
+        //result
+        //1 =》 2,3
+        //2 =》 3
+        Map<Long, List<UserTeam>> listMap = userTeamList.stream().collect(Collectors.groupingBy(UserTeam::getTeamId));
+        List<Long> idList = new ArrayList<>(listMap.keySet());
+        teamQuery.setIdList(idList);
+        List<TeamUserVO> teamList = teamService.listTeams(teamQuery, true);
+        return ResultUtils.success(teamList);
     }
 
 }
