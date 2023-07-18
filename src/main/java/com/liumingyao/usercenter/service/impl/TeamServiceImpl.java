@@ -240,9 +240,10 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         Long teamId = teamJoinRequest.getTeamId();
         Team team = getTeamById(teamId);
         Date expireTime = team.getExpireTime();
-        if (expireTime == null || expireTime.after(new Date())){
-            throw new BusinessException(ErrorCode.NULL_ERROR, "队伍已过期");
+        if (expireTime != null && expireTime.before(new Date())) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍已过期");
         }
+
         Integer status = team.getStatus();
         TeamStatusEnum teamStatusEnum = TeamStatusEnum.getEnumByValue(status);
         if (TeamStatusEnum.PRIVATE.equals(teamStatusEnum)) {

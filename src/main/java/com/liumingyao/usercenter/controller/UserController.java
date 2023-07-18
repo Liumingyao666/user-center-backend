@@ -9,6 +9,7 @@ import com.liumingyao.usercenter.exception.BusinessException;
 import com.liumingyao.usercenter.model.entity.User;
 import com.liumingyao.usercenter.model.request.UserLoginRequest;
 import com.liumingyao.usercenter.model.request.UserRegisterRequest;
+import com.liumingyao.usercenter.model.vo.UserVO;
 import com.liumingyao.usercenter.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -157,6 +158,20 @@ public class UserController {
         return ResultUtils.success(b);
     }
 
+    /**
+     * 获取最匹配的用户
+     *
+     * @param num
+     * @param request
+     * @return
+     */
+    @GetMapping("/match")
+    public BaseResponse<List<User>> matchUser(long num, HttpServletRequest request){
+        if (num <= 0 || num > 20) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User user = userService.getLoginUser(request);
 
-
+        return ResultUtils.success(userService.matchUser(num, user));
+    }
 }

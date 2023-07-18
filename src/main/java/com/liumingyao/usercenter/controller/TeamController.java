@@ -19,6 +19,7 @@ import com.liumingyao.usercenter.service.TeamService;
 import com.liumingyao.usercenter.service.UserService;
 import com.liumingyao.usercenter.service.UserTeamService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -154,8 +155,16 @@ public class TeamController {
         }
         User loginUser = userService.getLoginUser(request);
         boolean isAdmin = userService.isAdmin(loginUser);
-        List<TeamUserVO> teamList = teamService.listTeams(teamQuery, true);
-        return ResultUtils.success(teamList);
+        QueryWrapper<Team> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId", loginUser.getId());
+        List<Team> teamList = teamService.list(queryWrapper);
+        List<TeamUserVO> teamUserVOList = new ArrayList<>();
+        teamList.forEach(team -> {
+            TeamUserVO teamUserVO = new TeamUserVO();
+            BeanUtils.copyProperties(team, teamUserVO);
+            teamUserVOList.add(teamUserVO);
+        });
+        return ResultUtils.success(teamUserVOList);
     }
 
     /**
@@ -182,11 +191,19 @@ public class TeamController {
         //result
         //1 =》 2,3
         //2 =》 3
-        Map<Long, List<UserTeam>> listMap = userTeamList.stream().collect(Collectors.groupingBy(UserTeam::getTeamId));
-        List<Long> idList = new ArrayList<>(listMap.keySet());
-        teamQuery.setIdList(idList);
-        List<TeamUserVO> teamList = teamService.listTeams(teamQuery, true);
-        return ResultUtils.success(teamList);
+        if (CollectionUtils.isEmpty(userTeamList)){
+            return null;
+        }
+
+        List<Long> teamIdList = userTeamList.stream().map(UserTeam::getTeamId).collect(Collectors.toList());
+        List<Team> teamList = teamService.listByIds(teamIdList);
+        List<TeamUserVO> teamUserVOList = new ArrayList<>();
+        teamList.forEach(team -> {
+            TeamUserVO teamUserVO = new TeamUserVO();
+            BeanUtils.copyProperties(team, teamUserVO);
+            teamUserVOList.add(teamUserVO);
+        });
+        return ResultUtils.success(teamUserVOList);
     }
 
 }
