@@ -101,8 +101,13 @@ public class TeamController {
         if (teamQuery == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+
         boolean admin = userService.isAdmin(request);
         List<TeamUserVO> teamList = teamService.listTeams(teamQuery, admin);
+        //判断当前用户是否已加入队伍
+        List<Long> teamIdList = teamList.stream().map(TeamUserVO::getId).collect(Collectors.toList());
+        QueryWrapper<UserTeam> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("userId", )
         return ResultUtils.success(teamList);
     }
 
