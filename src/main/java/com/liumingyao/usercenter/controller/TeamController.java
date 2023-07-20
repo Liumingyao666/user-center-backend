@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -104,10 +105,33 @@ public class TeamController {
 
         boolean admin = userService.isAdmin(request);
         List<TeamUserVO> teamList = teamService.listTeams(teamQuery, admin);
+        //查询队伍列表
+        final List<Long> teamIdList = teamList.stream().map(TeamUserVO::getId).collect(Collectors.toList());
         //判断当前用户是否已加入队伍
-        List<Long> teamIdList = teamList.stream().map(TeamUserVO::getId).collect(Collectors.toList());
         QueryWrapper<UserTeam> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("userId", )
+        try{
+            User loginUser = userService.getLoginUser(request);
+            queryWrapper.eq("userId", loginUser.getId());
+            queryWrapper.in("teamId", teamIdList);
+            List<UserTeam> userTeamList = userTeamService.list(queryWrapper);
+            Set<Long> hasJoinTeamList = userTeamList.stream().map(UserTeam::getTeamId).collect(Collectors.toSet());
+            teamList.forEach(team -> {
+                boolean hasJoin = hasJoinTeamList.contains(team.getId());
+                team.setHasJoin(hasJoin);
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        // 查询加入队伍的用户信息（人数）
+        QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
+        queryWrapper.in("teamId", teamIdList);
+        List<UserTeam> userTeamList = userTeamService.list(userTeamQueryWrapper);
+        //队伍id =》加入这个队伍的用户列表
+        Map<Long, List<UserTeam>> teamUserList = userTeamList.stream().collect(Collectors.groupingBy(UserTeam::getTeamId));
+        teamList.forEach(team -> {
+            team.setHasJoinNum(teamUserList.getOrDefault(team.getId(), new ArrayList<>()).size());
+        });
+
         return ResultUtils.success(teamList);
     }
 

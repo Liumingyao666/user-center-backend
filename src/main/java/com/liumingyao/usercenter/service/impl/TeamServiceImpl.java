@@ -164,7 +164,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             if (teamStatusEnum == null){
                 teamStatusEnum = TeamStatusEnum.PUBLIC;
             }
-            if (!isAdmin && !teamStatusEnum.equals(TeamStatusEnum.PUBLIC)){
+            if (!isAdmin && teamStatusEnum.equals(TeamStatusEnum.PRIVATE)){
                 throw new BusinessException(ErrorCode.NO_AUTH);
             }
             queryWrapper.eq("status", teamStatusEnum.getValue());
