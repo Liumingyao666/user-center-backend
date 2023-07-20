@@ -1,6 +1,7 @@
 package com.liumingyao.usercenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.liumingyao.usercenter.common.ErrorCode;
 import com.liumingyao.usercenter.enums.TeamStatusEnum;
@@ -20,6 +21,8 @@ import com.liumingyao.usercenter.service.UserService;
 import com.liumingyao.usercenter.service.UserTeamService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
 * @author LiuMingyao
@@ -44,6 +48,9 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private RedissonClient redissonClient;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -255,31 +262,50 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
                 throw new BusinessException(ErrorCode.NULL_ERROR, "密码错误");
             }
         }
+
         //该用户已加入的队伍数量
         Long userId = loginUser.getId();
-        QueryWrapper<UserTeam> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userId", userId);
-        long hasJoinNums = userTeamService.count(queryWrapper);
-        if (hasJoinNums > 5) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "最多创建5个人的队伍");
-        }
-        //不能重复加入已加入的队伍
-        QueryWrapper<UserTeam> queryWrapper2 = new QueryWrapper<>();
-        queryWrapper2.eq("userId", userId);
-        queryWrapper2.eq("teamId", teamId);
-        long hasUserJoinTeam = userTeamService.count(queryWrapper2);
-        if (hasUserJoinTeam > 0){
-            throw new BusinessException(ErrorCode.NULL_ERROR, "用户已加入该队伍");
-        }
-        //已加入队伍的人数
-        long teamHasJoinNum = countTeamUserByTeamId(teamId);
-        if (teamHasJoinNum >= team.getMaxNum()){
-            throw new BusinessException(ErrorCode.NULL_ERROR, "队伍已满");
-        }
 
-        //修改队伍信息
-        UserTeam userTeam = UserTeam.builder().teamId(teamId).userId(userId).joinTime(new Date()).build();
-        return userTeamService.save(userTeam);
+        //只有一个线程能获取到锁
+        RLock lock = redissonClient.getLock("yupao:join_team");
+        try {
+            //抢锁并执行
+            while (true) {
+                if (lock.tryLock(0, 30000, TimeUnit.MILLISECONDS)) {
+                    QueryWrapper<UserTeam> queryWrapper = new QueryWrapper<>();
+                    queryWrapper.eq("userId", userId);
+                    long hasJoinNums = userTeamService.count(queryWrapper);
+                    if (hasJoinNums > 5) {
+                        throw new BusinessException(ErrorCode.PARAMS_ERROR, "最多创建5个人的队伍");
+                    }
+                    //不能重复加入已加入的队伍
+                    QueryWrapper<UserTeam> queryWrapper2 = new QueryWrapper<>();
+                    queryWrapper2.eq("userId", userId);
+                    queryWrapper2.eq("teamId", teamId);
+                    long hasUserJoinTeam = userTeamService.count(queryWrapper2);
+                    if (hasUserJoinTeam > 0) {
+                        throw new BusinessException(ErrorCode.NULL_ERROR, "用户已加入该队伍");
+                    }
+                    //已加入队伍的人数
+                    long teamHasJoinNum = countTeamUserByTeamId(teamId);
+                    if (teamHasJoinNum >= team.getMaxNum()) {
+                        throw new BusinessException(ErrorCode.NULL_ERROR, "队伍已满");
+                    }
+
+                    //修改队伍信息
+                    UserTeam userTeam = UserTeam.builder().teamId(teamId).userId(userId).joinTime(new Date()).build();
+                    return userTeamService.save(userTeam);
+                }
+            }
+        }catch (InterruptedException e){
+            log.error("doCacheRecommendUser error", e);
+            return false;
+        }finally {
+            //只能释放自己的锁，写在finally，写在try中报错就不执行了
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
+        }
     }
 
     @Override
