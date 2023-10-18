@@ -1,6 +1,11 @@
 # 伙伴匹配系统
 
-介绍：帮助大家找到志同道合的伙伴，移动端 H5 网页（尽量兼容 PC 端）
+## 系统预览图
+注册页面
+![image-1](https://github.com/Liumingyao666/github-img/blob/master/img/Snipaste_2023-10-18_16-57-00.png?raw=true)
+
+登录页面
+![image-2](https://github.com/Liumingyao666/github-img/blob/master/img/Snipaste_2023-10-18_16-55-38.png?raw=true)
 
 
 
