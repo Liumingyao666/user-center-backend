@@ -2,10 +2,44 @@
 
 ## 系统预览图
 注册页面
+
 ![image-1](https://github.com/Liumingyao666/github-img/blob/master/img/Snipaste_2023-10-18_16-57-00.png?raw=true)
 
 登录页面
+
 ![image-2](https://github.com/Liumingyao666/github-img/blob/master/img/Snipaste_2023-10-18_16-55-38.png?raw=true)
+
+主页
+
+![image-3](https://github.com/Liumingyao666/github-img/blob/master/img/Snipaste_2023-10-18_16-57-30.png?raw=true)
+
+心动模式
+
+![image-4](https://github.com/Liumingyao666/github-img/blob/master/img/Snipaste_2023-10-18_16-57-49.png?raw=true)
+
+伙伴搜索页面
+
+![image-5](https://github.com/Liumingyao666/github-img/blob/master/img/Snipaste_2023-10-18_16-58-03.png?raw=true)
+
+队伍列表页面
+
+![image-6](https://github.com/Liumingyao666/github-img/blob/master/img/Snipaste_2023-10-18_16-58-33.png?raw=true)
+
+私密队伍页面
+
+![image-7](https://github.com/Liumingyao666/github-img/blob/master/img/Snipaste_2023-10-18_16-58-41.png?raw=true)
+
+创建队伍页面
+
+![image-8](https://github.com/Liumingyao666/github-img/blob/master/img/Snipaste_2023-10-18_16-59-17.png?raw=true)
+
+个人信息页面
+
+![image-9](https://github.com/Liumingyao666/github-img/blob/master/img/Snipaste_2023-10-18_16-59-24.png?raw=true)
+
+个人信息修改页面
+
+![image-10](https://github.com/Liumingyao666/github-img/blob/master/img/Snipaste_2023-10-18_16-59-30.png?raw=true)
 
 
 
