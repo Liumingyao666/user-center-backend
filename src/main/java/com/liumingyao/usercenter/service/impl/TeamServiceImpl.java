@@ -1,11 +1,11 @@
 package com.liumingyao.usercenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.liumingyao.usercenter.common.ErrorCode;
 import com.liumingyao.usercenter.enums.TeamStatusEnum;
 import com.liumingyao.usercenter.exception.BusinessException;
+import com.liumingyao.usercenter.mapper.TeamMapper;
 import com.liumingyao.usercenter.model.dto.TeamQuery;
 import com.liumingyao.usercenter.model.entity.Team;
 import com.liumingyao.usercenter.model.entity.User;
@@ -16,7 +16,6 @@ import com.liumingyao.usercenter.model.request.TeamUpdateRequest;
 import com.liumingyao.usercenter.model.vo.TeamUserVO;
 import com.liumingyao.usercenter.model.vo.UserVO;
 import com.liumingyao.usercenter.service.TeamService;
-import com.liumingyao.usercenter.mapper.TeamMapper;
 import com.liumingyao.usercenter.service.UserService;
 import com.liumingyao.usercenter.service.UserTeamService;
 import org.apache.commons.collections4.CollectionUtils;
